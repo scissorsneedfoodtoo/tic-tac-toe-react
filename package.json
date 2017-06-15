@@ -9,6 +9,7 @@
   "devDependencies": {
     "react-scripts": "1.0.7"
   },
+  "homepage" : "https://scissorsneedfoodtoo.github.io/tic-tac-toe-react/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
