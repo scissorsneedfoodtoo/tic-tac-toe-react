@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 import './App.css';
 
 class App extends React.Component {
@@ -30,11 +29,12 @@ class App extends React.Component {
     this.clickDropDownMenu = this.clickDropDownMenu.bind(this);
     this.checkForWinner = this.checkForWinner.bind(this);
     this.changeCurrentPlayer = this.changeCurrentPlayer.bind(this);
+    this.AIMakeMove = this.AIMakeMove.bind(this);
   } // end constructor
 
   handleClick(index) {
     if(this.state.board[index] === "" && !this.state.winner) {
-      this.state.board[index] = this.state.currentTurn
+      this.state.board[index] = this.state.currentTurn // original
       this.setState((prevState) => {
         return {
           board: this.state.board,
@@ -78,20 +78,14 @@ class App extends React.Component {
 
     if (isVisible) {
       this.setState((prevState) => {
-        // console.log(this.state, prevState)
         return {
           menuVisible: false,
-          // xWins: prevState.xWins,
-          // oWins: prevState.oWins,
         }
       });
     } else {
       this.setState((prevState) => {
-        // console.log(this.state, prevState)
         return {
           menuVisible: true,
-          // xWins: prevState.xWins,
-          // oWins: prevState.oWins,
         }
       });
     }
@@ -534,6 +528,12 @@ class App extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    // console.log(nextProps, nextState);
+    // console.log(prevState.board, this.state.board)
+    this.AIMakeMove(this.state);
+  }
+
   render() {
 
     return (
@@ -541,32 +541,32 @@ class App extends React.Component {
         <div className="app-container">
           <div className="upper-div">
             <div className="difficulty-container">
-              <div className="difficulty-select" onClick={this.clickDropDownMenu}>
+              <div className="difficulty-select" onClick={() => this.clickDropDownMenu()}>
                 <span className="current-difficulty">{this.displayDifficulty(this.state.currentDifficulty)}</span>
               </div>
               {/* end difficulty-select */}
               <ul className={`difficulty-drop-down ${this.toggleDropDownMenu(this.state.menuVisible)}`}>
                 <div className="menu-item">
                   <label className={`menu-label ${this.menuColorToggle(this.state.easy)}`} for="easy">
-                    <input type="checkbox" id="easy" label="easy" value="easy" onChange={this.handleDifficultyChange} checked={this.state.easy} onClick={this.clickDropDownMenu}/>
+                    <input type="checkbox" id="easy" label="easy" value="easy" onChange={this.handleDifficultyChange} checked={this.state.easy} onClick={() => this.clickDropDownMenu()}/>
                     Easy
                   </label>
                 </div>
                 <div className="menu-item">
                   <label className={`menu-label ${this.menuColorToggle(this.state.medium)}`} for="medium">
-                    <input type="checkbox" id="medium" label="medium" value="medium" onChange={this.handleDifficultyChange} checked={this.state.medium} onClick={this.clickDropDownMenu}/>
+                    <input type="checkbox" id="medium" label="medium" value="medium" onChange={this.handleDifficultyChange} checked={this.state.medium} onClick={() => this.clickDropDownMenu()}/>
                     Medium
                   </label>
                 </div>
                 <div className="menu-item">
                   <label className={`menu-label ${this.menuColorToggle(this.state.impossible)}`} for="impossible">
-                    <input type="checkbox" id="impossible" label="impossible" value="impossible" onChange={this.handleDifficultyChange} checked={this.state.impossible} onClick={this.clickDropDownMenu}/>
+                    <input type="checkbox" id="impossible" label="impossible" value="impossible" onChange={this.handleDifficultyChange} checked={this.state.impossible} onClick={() => this.clickDropDownMenu()}/>
                     Impossible
                   </label>
                 </div>
                 <div className="menu-item">
                   <label className={`menu-label ${this.menuColorToggle(this.state.pvp)}`} for="pvp">
-                    <input type="checkbox" id="pvp" label="pvp" value="pvp" onChange={this.handleDifficultyChange} checked={this.state.pvp} onClick={this.clickDropDownMenu}/>
+                    <input type="checkbox" id="pvp" label="pvp" value="pvp" onChange={this.handleDifficultyChange} checked={this.state.pvp} onClick={() => this.clickDropDownMenu()}/>
                     Play against a friend
                   </label>
                 </div>
@@ -575,7 +575,7 @@ class App extends React.Component {
             {/* end difficulty-container */}
             <div className="scoreboard">
               {this.tallyScore(this.state.winner)}
-              <div className={`player-x ${this.borderToggle(this.state.currentTurn, "x")}`} onClick={this.changeCurrentPlayer} >
+              <div className={`player-x ${this.borderToggle(this.state.currentTurn, "x")}`} onClick={() => this.changeCurrentPlayer()} >
                 <div className="x-label">
                   X
                 </div>
@@ -584,7 +584,7 @@ class App extends React.Component {
                 </div>
               </div>
               {/* end player-x */}
-              <div className={`player-o ${this.borderToggle(this.state.currentTurn, "o")}`} onClick={this.changeCurrentPlayer}>
+              <div className={`player-o ${this.borderToggle(this.state.currentTurn, "o")}`} onClick={() => this.changeCurrentPlayer()}>
                 <div className="o-label">
                   O
                 </div>
@@ -606,12 +606,12 @@ class App extends React.Component {
               return <div onClick={() => this.handleClick(index)} className={`square ${`square-` + index} ${this.state.board[index]}`}>{cell}</div>;
             })}
             {/* renders the board, iterates through the squares, handles click events and sets the X or O, and sets class names based on index, and turn played in square*/}
-            {this.AIMakeMove(this.state)}
+            {/* this.AIMakeMove(this.state) */}
           </div>
           {/* end board */}
           </div>
           {/* end board-container */}
-          <div className="restart" onClick={this.restartGame}>
+          <div className="restart" onClick={() => this.restartGame()}>
             Restart Game
           </div>
           {/* end buttons */}
