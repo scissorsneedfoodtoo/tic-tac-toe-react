@@ -36,11 +36,14 @@ class App extends React.Component {
     if(this.state.board[index] === "" && !this.state.winner) {
       this.state.board[index] = this.state.currentTurn // original
       this.setState((prevState) => {
+        console.log(prevState)
         return {
           board: this.state.board,
           currentTurn: prevState.currentTurn === this.state.playerOneSymbol ? this.state.playerTwoSymbol : this.state.playerOneSymbol,
           winner: this.checkForWinner(this.state.board),
           currentPlayer: this.handleAITurn(this.state),
+          xWins: this.tallyXScore(this.checkForWinner(this.state.board), this.state.xWins),
+          oWins: this.tallyOScore(this.checkForWinner(this.state.board), this.state.oWins),
         }
       }) // end setState
     } // end if
@@ -173,7 +176,6 @@ class App extends React.Component {
       var [a, b, c] = winningCombos[i];
       if (symbols[a] && symbols[a] === symbols[b] && symbols[a] === symbols[c]) {
         // console.log("winning squares: " + [a,b,c]) // used to draw winning line later
-        // this.tallyScore(symbols[a]); // NOTE!: This might mess up with the minimax calculations later
         return symbols[a]
       } // end if else check for winner
     } // end for
@@ -183,13 +185,24 @@ class App extends React.Component {
     return null // returns winner as null and the game continues
   } // end checkForWinner
 
-  tallyScore(winner) { // pulled this out of the checkForWinner function to prevent the minimax algorithm from driving up the scores
-    if (winner === null) {
+  // moved tally X and O functions out of render and are now called by handleClick so they are update immediately and without relying on react lifecycle update methods
+  tallyXScore(winner, totalXWins) {
+    if (winner === null && totalXWins === null) {
       return null;
     } else if (winner === "X") {
-      this.state.xWins += 1;
+      return totalXWins += 1;
+    } else {
+      return totalXWins;
+    }
+  }
+
+  tallyOScore(winner, totalOWins) {
+    if (winner === null && totalOWins === null) {
+      return null;
     } else if (winner === "O") {
-      this.state.oWins += 1;
+      return totalOWins += 1;
+    } else {
+      return totalOWins;
     }
   }
 
@@ -522,15 +535,14 @@ class App extends React.Component {
     var pvp = state.pvp;
 
     if (!pvp && currentPlayer === "human") {
-      return this.state.currentPlayer = "AI";
+      return "AI";
     } else if (!pvp && currentPlayer === "AI") {
-      return this.state.currentPlayer = "human";
+      return "human";
     }
   }
 
+  // AIMakeMove called here because instances of a player taking a move or chosing the O symbol both cause a rerender, which triggers the componentDidUpdate method
   componentDidUpdate(prevProps, prevState) {
-    // console.log(nextProps, nextState);
-    // console.log(prevState.board, this.state.board)
     this.AIMakeMove(this.state);
   }
 
@@ -574,7 +586,7 @@ class App extends React.Component {
             </div>
             {/* end difficulty-container */}
             <div className="scoreboard">
-              {this.tallyScore(this.state.winner)}
+              {/* this.tallyScore(this.state.winner) */}
               <div className={`player-x ${this.borderToggle(this.state.currentTurn, "x")}`} onClick={() => this.changeCurrentPlayer()} >
                 <div className="x-label">
                   X
