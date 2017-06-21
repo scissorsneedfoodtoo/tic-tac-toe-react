@@ -16,6 +16,7 @@ class App extends React.Component {
         "", "", "", "", "", "", "", "", ""
       ],
       winner: null,
+      winningCombo: null,
       xWins: null,
       oWins: null,
       easy: false,
@@ -36,7 +37,6 @@ class App extends React.Component {
     if(this.state.board[index] === "" && !this.state.winner) {
       this.state.board[index] = this.state.currentTurn // original
       this.setState((prevState) => {
-        console.log(prevState)
         return {
           board: this.state.board,
           currentTurn: prevState.currentTurn === this.state.playerOneSymbol ? this.state.playerTwoSymbol : this.state.playerOneSymbol,
@@ -163,15 +163,6 @@ class App extends React.Component {
     ]
     var draw = symbols.indexOf('');
 
-    // return winningCombos.find(function(combo) {
-    //   console.log(symbols[combo[0]])
-    //   if (symbols[combo[0]] !== "" && symbols[combo[1]] !== ""  && symbols[combo[2]] !== ""  && symbols[combo[0]] === symbols[combo[1]] && symbols[combo[1]] === symbols[combo[2]]) {
-    //     return symbols[combo[0]]
-    //   } else {
-    //     return false
-    //   }
-    // }) // this code shows the winning square indices for some reason
-
     for (var i = 0; i < winningCombos.length; i++) {
       var [a, b, c] = winningCombos[i];
       if (symbols[a] && symbols[a] === symbols[b] && symbols[a] === symbols[c]) {
@@ -217,6 +208,120 @@ class App extends React.Component {
     } // end if
   }
 
+  displayWinningLine(board) {
+    // console.log(arr);
+    var symbols = board
+    var winningCombos = [
+      [0, 1, 2], // horizontal-top win
+      [3, 4, 5], // horizontal-mid win
+      [6, 7, 8], // horizontal-bottom win
+      [0, 3, 6], // vertical-left win
+      [1, 4, 7], // vertical-mid win
+      [2, 5, 8], // vertical-right win
+      [0, 4, 8], // diagonal from left win
+      [2, 4, 6] // diagonal from right win
+    ]
+    var winner = this.state.winner
+
+    // base styling consistent across all winning lines
+    var styling = {
+      content: "",
+      margin: "0 auto",
+      position: "absolute",
+      zIndex: 2
+    }
+
+    // console.log(board, winningIndices, styling);
+    // console.log(winningIndices === [6, 7 ,8])
+
+    console.log()
+
+    if (winner) {
+
+      var winningIndices = winningCombos.find(function(combo) {
+        if (symbols[combo[0]] !== "" && symbols[combo[1]] !== ""  && symbols[combo[2]] !== ""  && symbols[combo[0]] === symbols[combo[1]] && symbols[combo[1]] === symbols[combo[2]]) {
+          return combo
+        } else {
+          return false
+        }
+      })
+
+      // simple function to compare every element of the winningIndices arr to the winningCombos arrs
+      function compareArrs(winningArr, comboArr) {
+        return winningArr.every(function(element, index) {
+          return element === comboArr[index]
+        })
+      }
+
+      if (winner === "X") {
+        styling["color"] = "#545454";
+      } else {
+        styling["color"] = "#f2ebd3";
+      }
+
+      if (compareArrs(winningIndices, [0, 1, 2])) {
+        styling["borderTop"] = "4px solid"
+        styling["top"] = "14.5%"
+        styling["left"] = 0
+        styling["right"] = 0
+        styling["bottom"] = 0
+      } else if (compareArrs(winningIndices, [3, 4, 5])) {
+        styling["borderTop"] = "4px solid"
+        styling["top"] = "48.2%"
+        styling["left"] = 0
+        styling["right"] = 0
+        styling["bottom"] = 0
+      } else if (compareArrs(winningIndices, [6, 7, 8])) {
+        styling["borderTop"] = "4px solid"
+        styling["top"] = "82%"
+        styling["left"] = 0
+        styling["right"] = 0
+        styling["bottom"] = 0
+      } else if (compareArrs(winningIndices, [0, 3, 6])) {
+        styling["borderLeft"] = "4px solid"
+        styling["top"] = 0
+        styling["left"] = "15%"
+        styling["right"] = 0
+        styling["bottom"] = 0
+      } else if (compareArrs(winningIndices, [1, 4, 7])) {
+        styling["borderLeft"] = "4px solid"
+        styling["top"] = 0
+        styling["left"] = "49%"
+        styling["right"] = 0
+        styling["bottom"] = 0
+      } else if (compareArrs(winningIndices, [2, 5, 8])) {
+        styling["borderLeft"] = "4px solid"
+        styling["top"] = 0
+        styling["left"] = "83%"
+        styling["right"] = 0
+        styling["bottom"] = 0
+      } else if (compareArrs(winningIndices, [0, 4, 8])) {
+        styling["borderTop"] = "4px solid"
+        styling["top"] = 0
+        styling["left"] = "2%"
+        styling["right"] = 0
+        styling["bottom"] = 0
+        styling["transform"] = "rotate(45deg)"
+        styling["transformOrigin"] = "0% 0%"
+        styling["width"] = "140%"
+        styling["height"] = 0
+      } else if (compareArrs(winningIndices, [2, 4, 6])) {
+        styling["borderLeft"] = "4px solid"
+        styling["top"] = 0
+        styling["left"] = "98%"
+        styling["right"] = 0
+        styling["bottom"] = 0
+        styling["transform"] = "rotate(45deg)"
+        styling["transformOrigin"] = "0% 0%"
+        styling["height"] = "140%"
+      }
+
+      return styling
+    } else {
+      return
+    }
+  }
+
 
   AIMakeMove(state) {
     var currentDifficulty = state.currentDifficulty;
@@ -224,7 +329,7 @@ class App extends React.Component {
 
     // helper function to find all available squares
     function findOpenSquares(arr, targetArr) {
-      arr.map(function(cell, index) {
+      arr.forEach(function(cell, index) {
         if (cell.length === 0) {
           targetArr.push(index);
         }
@@ -278,7 +383,7 @@ class App extends React.Component {
         } // end if / else optimal
       }
 
-      console.log(targetScore);
+      // console.log(targetScore);
 
       // reduce tempScores to new array containing only that number
       var scoresIndexes = tempScores.reduce(function(acc, num, index) {
@@ -289,7 +394,7 @@ class App extends React.Component {
         }
       }, []);
 
-      console.log(tempScores, scoresIndexes)
+      // console.log(tempScores, scoresIndexes)
 
       // finally, return a random index of minNumIndexes if the length of minNums > 1
       // console.log(targetScore, tempScores, openSquares, scoresIndexes);
@@ -446,7 +551,7 @@ class App extends React.Component {
 
     function easyMove(board) {
       var availableSquares = [];
-      board.map(function(cell, index) {
+      board.forEach(function(cell, index) {
         if (cell.length === 0) {
           availableSquares.push(index);
         }
@@ -483,7 +588,7 @@ class App extends React.Component {
             return getRandomScoreIndex(boardScores, "max", "medium", true);
           }
         } else {
-          console.log('working greater than probability', roll)
+          // console.log('working greater than probability', roll)
           if (boardScoresHighestVal <= 0) {
             return getRandomScoreIndex(boardScores, "min", "medium", false);
           } else {
@@ -522,7 +627,6 @@ class App extends React.Component {
       if (currentDifficulty === "easy" && currentPlayer === "AI") {
         this.handleClick(easyMove(state.board));
       } else if (currentDifficulty === "medium" && currentPlayer === "AI") {
-        console.log(currentPlayer)
         this.handleClick(mediumMove(state.board));
       } else if (currentDifficulty === "impossible" && currentPlayer === "AI") {
         this.handleClick(impossibleMove(state.board));
@@ -543,7 +647,9 @@ class App extends React.Component {
 
   // AIMakeMove called here because instances of a player taking a move or chosing the O symbol both cause a rerender, which triggers the componentDidUpdate method
   componentDidUpdate(prevProps, prevState) {
-    this.AIMakeMove(this.state);
+    if (!this.state.winner) {
+      this.AIMakeMove(this.state);
+    }
   }
 
   render() {
@@ -613,14 +719,15 @@ class App extends React.Component {
           </div>
           {/* end upper div */}
           <div className="board-container">
-          <div className="board">
-            {this.state.board.map((cell, index) => {
-              return <div onClick={() => this.handleClick(index)} className={`square ${`square-` + index} ${this.state.board[index]}`}>{cell}</div>;
-            })}
-            {/* renders the board, iterates through the squares, handles click events and sets the X or O, and sets class names based on index, and turn played in square*/}
-            {/* this.AIMakeMove(this.state) */}
-          </div>
-          {/* end board */}
+            <div className="board">
+              <div className="winning-line" style={this.displayWinningLine(this.state.board)}></div>
+              {this.state.board.map((cell, index) => {
+                return <div onClick={() => this.handleClick(index)} className={`square ${`square-` + index} ${this.state.board[index]}`}>{cell}</div>;
+              })}
+              {/* renders the board, iterates through the squares, handles click events and sets the X or O, and sets class names based on index, and turn played in square*/}
+              {/* this.AIMakeMove(this.state) */}
+            </div>
+            {/* end board */}
           </div>
           {/* end board-container */}
           <div className="restart" onClick={() => this.restartGame()}>
