@@ -231,12 +231,7 @@ class App extends React.Component {
       zIndex: 2
     }
 
-    // console.log(board, winningIndices, styling);
-    // console.log(winningIndices === [6, 7 ,8])
-
-    console.log()
-
-    if (winner) {
+    if (winner && winner !== "draw") {
 
       var winningIndices = winningCombos.find(function(combo) {
         if (symbols[combo[0]] !== "" && symbols[combo[1]] !== ""  && symbols[combo[2]] !== ""  && symbols[combo[0]] === symbols[combo[1]] && symbols[combo[1]] === symbols[combo[2]]) {
