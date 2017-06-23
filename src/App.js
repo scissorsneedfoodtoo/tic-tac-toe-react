@@ -634,25 +634,25 @@ class App extends React.Component {
               {/* end difficulty-select */}
               <ul className={`difficulty-drop-down ${this.toggleDropDownMenu(this.state.menuVisible)}`}>
                 <div className="menu-item">
-                  <label className={`menu-label ${this.menuColorToggle(this.state.easy)}`} for="easy">
+                  <label className={`menu-label ${this.menuColorToggle(this.state.easy)}`} htmlFor="easy">
                     <input type="checkbox" id="easy" label="easy" value="easy" onChange={this.handleDifficultyChange} checked={this.state.easy} onClick={() => this.clickDropDownMenu()}/>
                     Easy
                   </label>
                 </div>
                 <div className="menu-item">
-                  <label className={`menu-label ${this.menuColorToggle(this.state.medium)}`} for="medium">
+                  <label className={`menu-label ${this.menuColorToggle(this.state.medium)}`} htmlFor="medium">
                     <input type="checkbox" id="medium" label="medium" value="medium" onChange={this.handleDifficultyChange} checked={this.state.medium} onClick={() => this.clickDropDownMenu()}/>
                     Medium
                   </label>
                 </div>
                 <div className="menu-item">
-                  <label className={`menu-label ${this.menuColorToggle(this.state.impossible)}`} for="impossible">
+                  <label className={`menu-label ${this.menuColorToggle(this.state.impossible)}`} htmlFor="impossible">
                     <input type="checkbox" id="impossible" label="impossible" value="impossible" onChange={this.handleDifficultyChange} checked={this.state.impossible} onClick={() => this.clickDropDownMenu()}/>
                     Impossible
                   </label>
                 </div>
                 <div className="menu-item">
-                  <label className={`menu-label ${this.menuColorToggle(this.state.pvp)}`} for="pvp">
+                  <label className={`menu-label ${this.menuColorToggle(this.state.pvp)}`} htmlFor="pvp">
                     <input type="checkbox" id="pvp" label="pvp" value="pvp" onChange={this.handleDifficultyChange} checked={this.state.pvp} onClick={() => this.clickDropDownMenu()}/>
                     Play against a friend
                   </label>
