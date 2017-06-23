@@ -35,13 +35,13 @@ class App extends React.Component {
 
   handleClick(index) {
     if(this.state.board[index] === "" && !this.state.winner) {
-      this.state.board[index] = this.state.currentTurn // original
+      this.state.board[index] = this.state.currentTurn // original, but thorws 'Do not mutate state directly' error
       this.setState((prevState) => {
         return {
           board: this.state.board,
           currentTurn: prevState.currentTurn === this.state.playerOneSymbol ? this.state.playerTwoSymbol : this.state.playerOneSymbol,
           winner: this.checkForWinner(this.state.board),
-          currentPlayer: this.handleAITurn(this.state),
+          currentPlayer: this.currentPlayerSwitcher(this.state),
           xWins: this.tallyXScore(this.checkForWinner(this.state.board), this.state.xWins),
           oWins: this.tallyOScore(this.checkForWinner(this.state.board), this.state.oWins),
         }
@@ -50,12 +50,12 @@ class App extends React.Component {
   } // end handleClick
 
   handleDifficultyChange(event) {
-    var target = event.target;
-    var isChecked = target.type === 'checkbox' ? target.checked : target.value;
-    var value = target.value;
+    let target = event.target;
+    let isChecked = target.type === 'checkbox' ? target.checked : target.value;
+    let value = target.value;
 
     return this.setState((prevState) => {
-      var lastChecked = Object.keys(prevState).filter(function(key) {
+      let lastChecked = Object.keys(prevState).filter(function(key) {
         return prevState[key] === true;
       })
       return {[value]: isChecked, [lastChecked]: false, currentDifficulty: value}
@@ -75,7 +75,7 @@ class App extends React.Component {
   }
 
   clickDropDownMenu() {
-    var isVisible = this.state.menuVisible;
+    const isVisible = this.state.menuVisible;
 
     this.restartGame(); // restarts the game if menu is clicked as a workaround of the score going up on each rerender if there is a current winner
 
@@ -126,7 +126,7 @@ class App extends React.Component {
   } // end restartGame
 
   borderToggle(currentTurn, player) {
-    var winner = this.state.winner;
+    const winner = this.state.winner;
     if (currentTurn === "X" && player === "x" && !winner) {
       return "active";
     } else if (currentTurn === "O" && player === "o" && !winner) {
@@ -137,8 +137,7 @@ class App extends React.Component {
   }
 
   playByPlayUpdate(state) {
-    // console.log(state)
-    var gameStarted = state.board.indexOf('X'); // checks for X which will always be the first turn played
+    const gameStarted = state.board.indexOf('X'); // checks for X which will always be the first turn played
     if (gameStarted === -1) {
       return `Start game or select player`;
     } else if (state.winner) {
@@ -150,8 +149,8 @@ class App extends React.Component {
   }
 
   checkForWinner(board) {
-    var symbols = board
-    var winningCombos = [
+    const symbols = board;
+    const winningCombos = [
       [0, 1, 2],
       [3, 4, 5],
       [6, 7, 8],
@@ -161,10 +160,10 @@ class App extends React.Component {
       [0, 4, 8],
       [2, 4, 6]
     ]
-    var draw = symbols.indexOf('');
+    const draw = symbols.indexOf('');
 
-    for (var i = 0; i < winningCombos.length; i++) {
-      var [a, b, c] = winningCombos[i];
+    for (let i = 0; i < winningCombos.length; i++) {
+      let [a, b, c] = winningCombos[i];
       if (symbols[a] && symbols[a] === symbols[b] && symbols[a] === symbols[c]) {
         // console.log("winning squares: " + [a,b,c]) // used to draw winning line later
         return symbols[a]
@@ -198,7 +197,7 @@ class App extends React.Component {
   }
 
   changeCurrentPlayer() {
-    var gameStarted = this.state.board.indexOf('X');
+    const gameStarted = this.state.board.indexOf('X');
 
     // if game didn't start
     if (gameStarted === -1) {
@@ -209,9 +208,8 @@ class App extends React.Component {
   }
 
   displayWinningLine(board) {
-    // console.log(arr);
-    var symbols = board
-    var winningCombos = [
+    const symbols = board;
+    const winningCombos = [
       [0, 1, 2], // horizontal-top win
       [3, 4, 5], // horizontal-mid win
       [6, 7, 8], // horizontal-bottom win
@@ -221,10 +219,10 @@ class App extends React.Component {
       [0, 4, 8], // diagonal from left win
       [2, 4, 6] // diagonal from right win
     ]
-    var winner = this.state.winner
+    const winner = this.state.winner;
 
     // base styling consistent across all winning lines
-    var styling = {
+    let styling = {
       content: "",
       margin: "0 auto",
       position: "absolute",
@@ -233,7 +231,7 @@ class App extends React.Component {
 
     if (winner && winner !== "draw") {
 
-      var winningIndices = winningCombos.find(function(combo) {
+      const winningIndices = winningCombos.find(function(combo) {
         if (symbols[combo[0]] !== "" && symbols[combo[1]] !== ""  && symbols[combo[2]] !== ""  && symbols[combo[0]] === symbols[combo[1]] && symbols[combo[1]] === symbols[combo[2]]) {
           return combo
         } else {
@@ -319,8 +317,8 @@ class App extends React.Component {
 
 
   AIMakeMove(state) {
-    var currentDifficulty = state.currentDifficulty;
-    var currentPlayer = state.currentPlayer;
+    const currentDifficulty = state.currentDifficulty;
+    const currentPlayer = state.currentPlayer;
 
     // helper function to find all available squares
     function findOpenSquares(arr, targetArr) {
@@ -331,11 +329,11 @@ class App extends React.Component {
       });
     } // end findOpenSquares
 
-    var getRandomScoreIndex = (scoresArr, val, difficulty, optimal) => {
+    const getRandomScoreIndex = (scoresArr, val, difficulty, optimal) => {
 
       // find currently open squares on the board to rule out the zeros of already played spaces in the tallyScores arr
-      var openSquares = [];
-      var tempScores = [];
+      let openSquares = [];
+      let tempScores = [];
 
       findOpenSquares(state.board, openSquares);
 
@@ -345,7 +343,7 @@ class App extends React.Component {
       });
 
       // min or max score
-      var targetScore;
+      let targetScore;
 
       // update targetScore based on arguments passed to getRandomScoreIndex function
       if (difficulty === "impossible") {
@@ -370,10 +368,10 @@ class App extends React.Component {
         } else if (!optimal) {
           if (val === "min") {
             // console.log('working !optimal min')
-            var targetScore = tempScores.sort(function(a, b) {return a - b;})[1];
+            targetScore = tempScores.sort(function(a, b) {return a - b;})[1];
           } else if (val === "max") {
             // console.log('working !optimal max')
-            var targetScore = tempScores.sort(function(a, b) {return b - a;})[1];
+            targetScore = tempScores.sort(function(a, b) {return b - a;})[1];
           }
         } // end if / else optimal
       }
@@ -381,7 +379,7 @@ class App extends React.Component {
       // console.log(targetScore);
 
       // reduce tempScores to new array containing only that number
-      var scoresIndexes = tempScores.reduce(function(acc, num, index) {
+      let scoresIndexes = tempScores.reduce(function(acc, num, index) {
         if (num === targetScore) {
           return acc.concat(openSquares[index]);
         } else {
@@ -389,32 +387,24 @@ class App extends React.Component {
         }
       }, []);
 
-      // console.log(tempScores, scoresIndexes)
-
       // finally, return a random index of minNumIndexes if the length of minNums > 1
       // console.log(targetScore, tempScores, openSquares, scoresIndexes);
       if (scoresIndexes.length > 1) {
         // below so that the last index of the minNumIndexes is included as a possible random number
-        var maxLength = Math.floor(scoresIndexes.length);
-        var randomIndex = Math.floor(Math.random() * (maxLength - 0)) + 0;
+        const maxLength = Math.floor(scoresIndexes.length);
+        const randomIndex = Math.floor(Math.random() * (maxLength - 0)) + 0;
         // return a random index of the scoresIndexes of scoresArr / tallyScores
         // console.log(scoresIndexes[randomIndex]);
         return scoresIndexes[randomIndex];
       } else if (scoresIndexes.length === 1) {
         return scoresIndexes[0]; // there is only one index in this arr, so return whatever open square that is
       }
-
-      // else if (scoresIndexes.length === 1 && val === "min") {
-      //   return scoresIndexes[0]; // there is only one index in this arr, so return whatever open square that is
-      // } else if (scoresIndexes.length === 1 && val === "max") {
-      //   return scoresArr.indexOf(targetScore); // returns the index of whatever the maximum score is from the scoresArr that was passed to the function
-      // }
     } // end getRandomScoreIndex
 
     let minimaxScore = (board, boardCurrentTurn, depth) => { // need to use ES6 conventions and arrow function here to pass the checkForWinner function in
-      var gameWon = this.checkForWinner(board);
-      var playedSymbol = boardCurrentTurn === 'X' ? 'O' : 'X';
-      var opponent = state.currentTurn === 'O' ? 'X' : 'O';
+      const gameWon = this.checkForWinner(board);
+      const playedSymbol = boardCurrentTurn === 'X' ? 'O' : 'X';
+      const opponent = state.currentTurn === 'O' ? 'X' : 'O';
 
       // console.log(board, gameWon, playedSymbol, opponent, depth);
 
@@ -438,7 +428,7 @@ class App extends React.Component {
       } else {
 
         // calculate depth based on turns played in current state
-        var depth = 0;
+        let depth = 0;
         board.forEach(function(square) {
           if (square.length > 0) {
             depth += 1;
@@ -447,7 +437,8 @@ class App extends React.Component {
 
         // useful for turn swtiching during recursion
         let currentPlayerChecker = (board) => {
-          var turnsPlayed = 0;
+          let turnsPlayed = 0;
+
           // count how many turns have been played
           board.forEach(function(square) {
             if (square === "X" || square === "O") {
@@ -455,7 +446,6 @@ class App extends React.Component {
             }
           });
 
-          // if an even number of turnsPlayed, return X, else, O --> NOTE: Might be easier to read if just counting turns left to play
           if (turnsPlayed === 9) { // this is to prevent the currentTurn from showing O in a terminal game with the board filled, though this might not be necessary
             return "X";
           } else if (turnsPlayed % 2 === 0) {
@@ -467,7 +457,7 @@ class App extends React.Component {
 
         // helper function to generate a board and divorce it from the react state
         function generatePossibleState(board) {
-          var newBoard = board;
+          let newBoard = board;
           return newBoard.map(function(cell) {
             return cell;
           })
@@ -479,18 +469,7 @@ class App extends React.Component {
           return board;
         }
 
-        // helper function to determine turns left for later filtering
-        function calcTurnsLeft(board) {
-          var count = 9;
-          board.forEach(function(square) {
-            if (square === "O" || square === "X") {
-              count -= 1;
-            }
-          });
-          return count;
-        } // end calcTurnsLeft
-
-        var tallyScores = [0,0,0,0,0,0,0,0,0]; // used to calculate best move for AIPlayer
+        let tallyScores = [0,0,0,0,0,0,0,0,0]; // used to calculate best move for AIPlayer
 
         // generates all possible moves
         let populateAllStates = (paramBoard, depth) => {
@@ -503,24 +482,19 @@ class App extends React.Component {
             // add 1 to depth for each level of tree nodes
             depth += 1;
 
-            var nextStates = [];
-            var currentSquares = [];
+            let nextStates = [];
+            let currentSquares = [];
 
             findOpenSquares(paramBoard, currentSquares);
 
             currentSquares.forEach((square) => {
-              var newBoard = generatePossibleState(paramBoard);
-              var nextState = fillState(newBoard, square, currentPlayerChecker(paramBoard));
-              var turnsLeft = calcTurnsLeft(newBoard);
-              // console.log(nextState, currentSquares); // need to find way to push up scores from future winning states
+              const newBoard = generatePossibleState(paramBoard);
+              const nextState = fillState(newBoard, square, currentPlayerChecker(paramBoard));
 
               // push next state to above nextStates array for processing
-              nextStates.push(nextState); // --> original
+              nextStates.push(nextState);
 
-              // push object of scores, square index, and other values -- useful for debeugging
-              // scores.push({lastBoard: paramBoard, board: nextState, score: minimaxScore(nextState, currentPlayerChecker(nextState), depth), square: square, turnsLeft: turnsLeft, depth: depth, winner: this.checkForWinner(nextState)}); // --> original
-
-              var score = minimaxScore(nextState, currentPlayerChecker(nextState), depth);
+              const score = minimaxScore(nextState, currentPlayerChecker(nextState), depth);
               tallyScores[square] += score;
             });
 
@@ -545,13 +519,13 @@ class App extends React.Component {
     } // end minimax
 
     function easyMove(board) {
-      var availableSquares = [];
+      let availableSquares = [];
       board.forEach(function(cell, index) {
         if (cell.length === 0) {
           availableSquares.push(index);
         }
       });
-      var randomSquare = availableSquares[Math.floor(Math.random() * availableSquares.length)];
+      const randomSquare = availableSquares[Math.floor(Math.random() * availableSquares.length)];
 
       return randomSquare;
     } // end easyMove
@@ -559,22 +533,22 @@ class App extends React.Component {
     function mediumMove(board) {
 
       // store percentage of time this AI should make an optimal move
-      var probability = 40;
-      var roll = Math.random() * 100;
-      var gameStarted = board.indexOf("X");
+      const probability = 40;
+      const roll = Math.random() * 100;
+      const gameStarted = board.indexOf("X");
 
       // special case if the player chooses to be O -- AI chooses from either the best space, or one of the corners depending on the roll
 
       if (gameStarted === -1 && roll <= probability) {
         return 4;
       } else if (gameStarted === -1 && roll > probability) {
-        var corners = [0, 2, 6, 8];
+        const corners = [0, 2, 6, 8];
         // below so that the last index of the minNumIndexes is included as a possible random number
-        var randomIndex = Math.floor(Math.random() * (corners.length - 0)) + 0;
+        const randomIndex = Math.floor(Math.random() * (corners.length - 0)) + 0;
         return corners[randomIndex];
       } else if (gameStarted > -1) {
-        var boardScores = minimax(board);
-        var boardScoresHighestVal = Math.max.apply(null, boardScores); // a quick way to check the highest value and see wheter to pick a random max or random min score index -- though unlikely, this will prevent possible problems that may arise when the AI is faced with a tallyScores arr of [-1, 0], with -1 representing the score of a blocking move to prevent the player from winning. In this scenario the AI has no way to win, but can lose, resulting in a lower score. In this case the AI should take the role of the minimizer to prolong the game
+        const boardScores = minimax(board);
+        const boardScoresHighestVal = Math.max.apply(null, boardScores); // a quick way to check the highest value and see wheter to pick a random max or random min score index -- though unlikely, this will prevent possible problems that may arise when the AI is faced with a tallyScores arr of [-1, 0], with -1 representing the score of a blocking move to prevent the player from winning. In this scenario the AI has no way to win, but can lose, resulting in a lower score. In this case the AI should take the role of the minimizer to prolong the game
 
         if (roll <= probability) {
           if (boardScoresHighestVal <= 0) {
@@ -595,7 +569,7 @@ class App extends React.Component {
     } // end mediumMove
 
     function impossibleMove(board) {
-      var firstMove = state.board.indexOf("X");
+      const firstMove = state.board.indexOf("X");
 
       // if first move not played, return the possible move to lower minimax overhead
       if (firstMove === -1) {
@@ -604,9 +578,9 @@ class App extends React.Component {
       } else if (firstMove >= 0) { // AI needs to make either the second or thrid move
 
         // runs minimax and stores and arr of the current board's scores
-        var boardScores = minimax(board);
+        const boardScores = minimax(board);
 
-        var boardScoresHighestVal = Math.max.apply(null, boardScores); // a quick way to check the highest value and see wheter to pick a random max or random min score index -- though unlikely, this will prevent possible problems that may arise when the AI is faced with a tallyScores arr of [-1, 0], with -1 representing the score of a blocking move to prevent the player from winning. In this scenario the AI has no way to win, but can lose, resulting in a lower score. In this case the AI should take the role of the minimizer to prolong the game
+        const boardScoresHighestVal = Math.max.apply(null, boardScores); // a quick way to check the highest value and see wheter to pick a random max or random min score index -- though unlikely, this will prevent possible problems that may arise when the AI is faced with a tallyScores arr of [-1, 0], with -1 representing the score of a blocking move to prevent the player from winning. In this scenario the AI has no way to win, but can lose, resulting in a lower score. In this case the AI should take the role of the minimizer to prolong the game
 
         // return best possible move given the current board state
         if (boardScoresHighestVal <= 0) {
@@ -629,16 +603,16 @@ class App extends React.Component {
     } // end check for winner
   } // end AIMakeMove
 
-  handleAITurn(state) {
-    var currentPlayer = state.currentPlayer;
-    var pvp = state.pvp;
+  currentPlayerSwitcher(state) {
+    const currentPlayer = state.currentPlayer;
+    const pvp = state.pvp;
 
     if (!pvp && currentPlayer === "human") {
       return "AI";
     } else if (!pvp && currentPlayer === "AI") {
       return "human";
     }
-  }
+  } // end currentPlayerSwitcher
 
   // AIMakeMove called here because instances of a player taking a move or chosing the O symbol both cause a rerender, which triggers the componentDidUpdate method
   componentDidUpdate(prevProps, prevState) {
@@ -687,7 +661,6 @@ class App extends React.Component {
             </div>
             {/* end difficulty-container */}
             <div className="scoreboard">
-              {/* this.tallyScore(this.state.winner) */}
               <div className={`player-x ${this.borderToggle(this.state.currentTurn, "x")}`} onClick={() => this.changeCurrentPlayer()} >
                 <div className="x-label">
                   X
@@ -720,7 +693,6 @@ class App extends React.Component {
                 return <div onClick={() => this.handleClick(index)} className={`square ${`square-` + index} ${this.state.board[index]}`}>{cell}</div>;
               })}
               {/* renders the board, iterates through the squares, handles click events and sets the X or O, and sets class names based on index, and turn played in square*/}
-              {/* this.AIMakeMove(this.state) */}
             </div>
             {/* end board */}
           </div>
