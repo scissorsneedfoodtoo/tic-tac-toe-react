@@ -573,10 +573,22 @@ class App extends React.Component {
 
       // if first move not played, return the possible move to lower minimax overhead
       if (firstMove === -1) {
-        return 4; // index of center board position
+        // return 4; // original -- index of center board position
         // return 2; // testing corner first move
-        // const edges = [1, 3, 5, 7];
-        // return 1; // testing edge first move like Google web app
+        const center = 4;
+        const edges = [1, 3, 5, 7];
+        const corners = [0, 2, 6, 8];
+        const roll = Math.random() * 100;
+        const randomIndex = Math.floor(Math.random() * (4 - 0)) + 0; // 4 in this formula is the length of the corners and edges arrs
+
+        if (roll <= 33) {
+          return center;
+        } else if (roll <= 66) {
+          return edges[randomIndex];
+        } else if (roll <= 100) {
+          return corners[randomIndex];
+        }
+
       } else if (firstMove >= 0) { // AI needs to make either the second or thrid move
 
         // runs minimax and stores and arr of the current board's scores
