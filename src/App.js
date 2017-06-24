@@ -573,8 +573,10 @@ class App extends React.Component {
 
       // if first move not played, return the possible move to lower minimax overhead
       if (firstMove === -1) {
-        // console.log('working AI Impossible First Move');
         return 4; // index of center board position
+        // return 2; // testing corner first move
+        // const edges = [1, 3, 5, 7];
+        // return 1; // testing edge first move like Google web app
       } else if (firstMove >= 0) { // AI needs to make either the second or thrid move
 
         // runs minimax and stores and arr of the current board's scores
@@ -594,11 +596,11 @@ class App extends React.Component {
 
     if (!this.checkForWinner(state.board)) { // checks for winner to prevent unnecessary calculations
       if (currentDifficulty === "easy" && currentPlayer === "AI") {
-        this.handleClick(easyMove(state.board));
+        setTimeout(() => {this.handleClick(easyMove(state.board))}, 250);
       } else if (currentDifficulty === "medium" && currentPlayer === "AI") {
-        this.handleClick(mediumMove(state.board));
+        setTimeout(() => {this.handleClick(mediumMove(state.board))}, 250);
       } else if (currentDifficulty === "impossible" && currentPlayer === "AI") {
-        this.handleClick(impossibleMove(state.board));
+        setTimeout(() => {this.handleClick(impossibleMove(state.board))}, 250);
       }
     } // end check for winner
   } // end AIMakeMove
