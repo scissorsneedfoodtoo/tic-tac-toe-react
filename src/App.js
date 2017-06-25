@@ -409,11 +409,9 @@ class App extends React.Component {
       // console.log(board, gameWon, playedSymbol, opponent, depth);
 
       if (gameWon === playedSymbol) {
-        // console.log(10 - depth);
         return 10 - depth; // if 11, kinda cheating by nudging the algorithm toward obvious wins when faced with a win vs tie state
-        // return 11 - depth;
       } else if (gameWon === opponent) {
-        return depth - 10; // --original
+        return depth - 10;
       } else {
         return 0;
       }
@@ -511,7 +509,6 @@ class App extends React.Component {
         } // end populateAllStates
 
         populateAllStates(board, depth);
-        // console.log(scores);
 
         return tallyScores;
 
