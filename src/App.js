@@ -701,7 +701,7 @@ class App extends React.Component {
             <div className="board">
               <div className="winning-line" style={this.displayWinningLine(this.state.board)}></div>
               {this.state.board.map((cell, index) => {
-                return <div onClick={() => this.handleClick(index)} className={`square ${`square-` + index} ${this.state.board[index]}`}>{cell}</div>;
+                return <div key={index} onClick={() => this.handleClick(index)} className={`square ${`square-` + index} ${this.state.board[index]}`}>{cell}</div>;
               })}
               {/* renders the board, iterates through the squares, handles click events and sets the X or O, and sets class names based on index, and turn played in square*/}
             </div>
