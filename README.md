@@ -3,3 +3,5 @@ Created as one of the FreeCodeCamp advanced front end development projects. My g
 Since this was my first time using React, I used [this](https://www.youtube.com/watch?v=pTHCwUdGFkc&t=2s) video was used as a jumping off point. Some of the code, such as the method for adding X's and O's to the board using map to append the current symbol to the board's array, is taken from the video tutorial. However, setting the symbols this way does cause the state to be mutated directly rather than with setState, so I plan to change those bits of code in the near future.
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+
+Check it out at https://scissorsneedfoodtoo.github.io/tic-tac-toe-react/.
